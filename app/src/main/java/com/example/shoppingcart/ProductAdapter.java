@@ -1,5 +1,9 @@
 package com.example.shoppingcart;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.shoppingcart.database.Product;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -30,7 +35,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.ProductViewHolder holder, int position) {
+
         holder.viewName.setText(Products.get(position).product_name);
+        holder.viewImage.setImageBitmap(base64SringToImage(Products.get(position).product_image));
+        holder.viewPrice.setText(Products.get(position).price+"");
+
 
     }
 
@@ -41,12 +50,21 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
 
     class ProductViewHolder extends RecyclerView.ViewHolder{
-        TextView viewName;
+        TextView viewName, viewPrice;
         ImageView viewImage;
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             viewName = itemView.findViewById(R.id.viewName);
-            viewName = itemView.findViewById(R.id.viewImage);
+            viewImage = itemView.findViewById(R.id.viewImage);
+            viewPrice = itemView.findViewById(R.id.viewPrice);
         }
+    }
+
+    private Bitmap base64SringToImage(String imageString){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] imageBytes = baos.toByteArray();
+        imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+        Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        return decodedImage;
     }
 }
