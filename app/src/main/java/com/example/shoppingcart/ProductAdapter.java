@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.shoppingcart.Image.Image;
 import com.example.shoppingcart.database.Product;
 
 import java.io.ByteArrayOutputStream;
@@ -22,6 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private List<Product> Products;
     private OnItemClicked onClick;
+    Image image = new Image(this);
+
+    public ProductAdapter() {
+    }
 
     public ProductAdapter(Runnable runnable, List<Product> products) {
         Products = products;
@@ -43,7 +48,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductAdapter.ProductViewHolder holder, final int position) {
 
         holder.viewName.setText(Products.get(position).product_name);
-        holder.viewImage.setImageBitmap(base64SringToImage(Products.get(position).product_image));
+        holder.viewImage.setImageBitmap(image.base64SringToImage(Products.get(position).product_image));
         holder.viewPrice.setText(Products.get(position).price + "");
 
         holder.btnAddToCart.setOnClickListener(new View.OnClickListener() {
@@ -76,13 +81,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
     }
 
-    private Bitmap base64SringToImage(String imageString) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] imageBytes = baos.toByteArray();
-        imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-        Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        return decodedImage;
-    }
+
 
     public void setOnClick(OnItemClicked onClick) {
         this.onClick = onClick;
