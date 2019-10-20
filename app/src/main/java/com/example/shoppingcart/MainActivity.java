@@ -6,13 +6,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import android.util.Base64;
+import android.view.View;
 import android.widget.Toast;
 
+import com.example.shoppingcart.Cart.CartActivity;
+import com.example.shoppingcart.Image.Image;
 import com.example.shoppingcart.database.AppDatabase;
 import com.example.shoppingcart.database.Cart;
 import com.example.shoppingcart.database.Product;
@@ -25,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     AppDatabase db;
     RecyclerView recyclerViewProduct;
     ProductAdapter productAdapter;
+
     private static List<Product> Products = new ArrayList<>();
 
     @SuppressLint("WrongThread")
@@ -42,14 +49,14 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             @Override
             protected Void doInBackground(Void... voids) {
 
-                Product iphone = new Product("Iphone6", 12, 100000, imageToBase64String(R.drawable.b));
-                Product samsung = new Product("Samsung", 12, 100000, imageToBase64String(R.drawable.a));
+                Product iphone = new Product("Iphone6", 12, 100000, imageToBase64String(R.drawable.a));
+                Product samsung = new Product("Samsung", 12, 100000, imageToBase64String(R.drawable.b));
 
                 Product Iphone5 = new Product("Iphone5", 12, 100000, imageToBase64String(R.drawable.c));
                 Product Iphone11 = new Product("Iphone11", 12, 100000, imageToBase64String(R.drawable.d));
 
 
-                //  db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
+                db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
                 // db.ProductDao().insertAll( iphone);
                 //db.ProductDao().deleteAll();
                 return null;
@@ -75,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                     @Override
                     public void run() {
                         productAdapter = new ProductAdapter(this, Products);
-//                        productAdapter.setOnClick(MainActivity.this);
+                        productAdapter.setOnClick(MainActivity.this);
                         recyclerViewProduct.setAdapter(productAdapter);
 
 
@@ -87,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
     }
 
-    private String imageToBase64String(int c) {
+    public String imageToBase64String(int c) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), c);
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -96,21 +103,28 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         return imageString;
     }
 
+
     @Override
     public void onClickAddToCart(final int position) {
         new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                Cart newCart = new Cart(Products.get(position).product_name, Products.get(position).quantity, Products.get(position).price, Products.get(position).product_image);
+                Cart newCart = new Cart(Products.get(position).product_name, 1, Products.get(position).price, Products.get(position).product_image);
                 db.CartDao().insertAllCart(newCart);
 
-                Toast.makeText(getBaseContext(),"Add to cart successfully",
-                        Toast.LENGTH_SHORT).show();
+
                 //db.ProductDao().deleteAll();
                 return null;
             }
         }.execute();
+        Toast.makeText(getBaseContext(), "Add to cart successfully",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void showCarts(View view) {
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
 
     }
 }
