@@ -35,23 +35,26 @@
                 android:layout_height="wrap_content">
 
                 <Button
+                    android:id="@+id/btn_reduction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-" />
 
                 <TextView
-                    android:id="@+id/quantityCartItem"
+                    android:id="@+id/textViewQuantityCartItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_horizontal" />
 
                 <Button
+                    android:id="@+id/btn_plus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="+" />
 
                 <Button
+
                     android:id="@+id/btn_delete_cartItem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

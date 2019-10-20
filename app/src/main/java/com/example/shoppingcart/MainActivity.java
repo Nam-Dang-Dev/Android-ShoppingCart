@@ -8,9 +8,12 @@ import androidx.room.Room;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import com.example.shoppingcart.database.AppDatabase;
 import com.example.shoppingcart.database.Cart;
 import com.example.shoppingcart.database.Product;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     AppDatabase db;
     RecyclerView recyclerViewProduct;
     ProductAdapter productAdapter;
-    Image image = new Image(this);
+
     private static List<Product> Products = new ArrayList<>();
 
     @SuppressLint("WrongThread")
@@ -45,14 +49,14 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             @Override
             protected Void doInBackground(Void... voids) {
 
-                Product iphone = new Product("Iphone6", 12, 100000, image.imageToBase64String(R.drawable.b));
-                Product samsung = new Product("Samsung", 12, 100000, image.imageToBase64String(R.drawable.a));
+                Product iphone = new Product("Iphone6", 12, 100000, imageToBase64String(R.drawable.b));
+                Product samsung = new Product("Samsung", 12, 100000, imageToBase64String(R.drawable.a));
 
-                Product Iphone5 = new Product("Iphone5", 12, 100000, image.imageToBase64String(R.drawable.c));
-                Product Iphone11 = new Product("Iphone11", 12, 100000, image.imageToBase64String(R.drawable.d));
+                Product Iphone5 = new Product("Iphone5", 12, 100000, imageToBase64String(R.drawable.c));
+                Product Iphone11 = new Product("Iphone11", 12, 100000, imageToBase64String(R.drawable.d));
 
 
-                db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
+                //db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
                 // db.ProductDao().insertAll( iphone);
                 //db.ProductDao().deleteAll();
                 return null;
@@ -88,6 +92,15 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             }
         }.execute();
 
+    }
+
+    public String imageToBase64String(int c) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), c);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return imageString;
     }
 
 

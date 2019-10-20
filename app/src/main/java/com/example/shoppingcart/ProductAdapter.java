@@ -23,10 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private List<Product> Products;
     private OnItemClicked onClick;
-    Image image = new Image(this);
+    Image image = new Image();
 
-    public ProductAdapter() {
-    }
 
     public ProductAdapter(Runnable runnable, List<Product> products) {
         Products = products;
