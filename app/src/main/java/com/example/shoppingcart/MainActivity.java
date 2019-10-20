@@ -49,14 +49,14 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             @Override
             protected Void doInBackground(Void... voids) {
 
-                Product iphone = new Product("Iphone6", 12, 100000, imageToBase64String(R.drawable.b));
-                Product samsung = new Product("Samsung", 12, 100000, imageToBase64String(R.drawable.a));
+                Product iphone = new Product("Iphone6", 12, 100000, imageToBase64String(R.drawable.a));
+                Product samsung = new Product("Samsung", 12, 100000, imageToBase64String(R.drawable.b));
 
                 Product Iphone5 = new Product("Iphone5", 12, 100000, imageToBase64String(R.drawable.c));
                 Product Iphone11 = new Product("Iphone11", 12, 100000, imageToBase64String(R.drawable.d));
 
 
-                //db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
+                db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
                 // db.ProductDao().insertAll( iphone);
                 //db.ProductDao().deleteAll();
                 return null;
