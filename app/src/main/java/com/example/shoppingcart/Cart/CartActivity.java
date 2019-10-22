@@ -8,38 +8,27 @@ import androidx.room.Room;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.example.shoppingcart.MainActivity;
-import com.example.shoppingcart.ProductAdapter;
 import com.example.shoppingcart.R;
 import com.example.shoppingcart.database.AppDatabase;
 import com.example.shoppingcart.database.Cart;
-import com.example.shoppingcart.database.Product;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class CartActivity extends AppCompatActivity implements com.example.shoppingcart.Cart.cartAdapter.OnItemClicked {
     RecyclerView recyclerViewCart;
     cartAdapter cartAdapter;
     AppDatabase db;
-    TextView  textViewQuantity;
-    private static List<Cart> Carts = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-
-
         db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "database-shoppingCart").build();
-
-
-
+        cartAdapter = new cartAdapter();
         recyclerViewCart = findViewById(R.id.recycleViewCart);
         recyclerViewCart.setLayoutManager(new LinearLayoutManager(this));
+        cartAdapter.setOnClick(CartActivity.this);
+        recyclerViewCart.setAdapter(cartAdapter);
     }
     public void onResume() {
         super.onResume();
@@ -47,74 +36,71 @@ public class CartActivity extends AppCompatActivity implements com.example.shopp
     }
 
     private void getAndShowCarts() {
-        new AsyncTask<Void, Void, List<Product>>() {
+        new AsyncTask<Void, Void, List<Cart>>(){
             @Override
-            protected List<Product> doInBackground(Void... voids) {
-                Carts = db.CartDao().getAllCart();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        cartAdapter = new cartAdapter(this, Carts);
-                        cartAdapter.setOnClick(CartActivity.this);
-                        recyclerViewCart.setAdapter(cartAdapter);
+            protected List<Cart> doInBackground(Void... voids) {
+                return db.CartDao().getAllCart();
+            }
 
-
-                    }
-                });
-                return null;
+            @Override
+            protected void onPostExecute(List<Cart> carts) {
+                super.onPostExecute(carts);
+                cartAdapter.Carts = carts;
+                cartAdapter.notifyDataSetChanged();
             }
         }.execute();
-
+    }
+    private void updateQuantity(String calculate, final int position){
+        int OldQuantity =cartAdapter.Carts.get(position).quantity;
+        if(calculate =="plus"){
+            cartAdapter.Carts.get(position).quantity+=1;
+        }else if (calculate =="reduction"){
+            cartAdapter.Carts.get(position).quantity-=1;
+        }
+        if (OldQuantity>0){
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    db.CartDao().updateCart(cartAdapter.Carts.get(position));
+                    return null;
+                }
+            }.execute();
+        }
+        cartAdapter.notifyItemChanged(position);
     }
 
     @Override
     public void onClickReductionQuantity(final int position) {
-        int OldQuantity =Carts.get(position).quantity;
-       Carts.get(position).quantity-=1;
-
-
-        if (OldQuantity>0){
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    db.CartDao().updateCart(Carts.get(position));
-                    return null;
-                }
-            }.execute();
-        }
-        cartAdapter.notifyItemChanged(position);
-
+        updateQuantity("reduction", position);
     }
 
     @Override
     public void onClickPlusQuantity(final int position) {
-       int OldQuantity =Carts.get(position).quantity;
-       Carts.get(position).quantity+=1;
+        updateQuantity("plus", position);
+
+    }
+    private void deleteCartItem(final int position){
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                db.CartDao().deleteCart(cartAdapter.Carts.get(position));
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Log.d("tag","lan11111111"+position);
+                cartAdapter.Carts.remove(position);
+                cartAdapter.notifyDataSetChanged();
+                Log.d("tag","lan222222222"+position);
 
 
-        if (OldQuantity>0){
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    db.CartDao().updateCart(Carts.get(position));
-                    return null;
-                }
-            }.execute();
-        }
-        cartAdapter.notifyItemChanged(position);
+            }
+        }.execute();
     }
 
     @Override
     public void onClickDelete(final int position) {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                db.CartDao().deleteCart(Carts.get(position));
-                return null;
-            }
-        }.execute();
-        cartAdapter.notifyItemChanged(position);
-        Carts.remove(position);
+        deleteCartItem(position);
     }
 }

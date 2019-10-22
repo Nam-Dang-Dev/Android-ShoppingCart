@@ -1,6 +1,7 @@
 package com.example.shoppingcart;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -43,7 +44,19 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "database-shoppingCart").build();
 
+        insertProduct();
 
+
+        recyclerViewProduct = findViewById(R.id.recyclerView);
+        recyclerViewProduct.setLayoutManager(new GridLayoutManager(this, 2));
+
+    }
+
+    public void onResume() {
+        super.onResume();
+        getAndShowProducts();
+    }
+    private void insertProduct(){
         new AsyncTask<Void, Void, Void>() {
 
             @Override
@@ -56,23 +69,14 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                 Product Iphone11 = new Product("Iphone11", 12, 100000, imageToBase64String(R.drawable.d));
 
 
-                db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
+                //db.ProductDao().insertAll(samsung, iphone, Iphone5, Iphone11);
                 // db.ProductDao().insertAll( iphone);
                 //db.ProductDao().deleteAll();
                 return null;
             }
         }.execute();
 
-        recyclerViewProduct = findViewById(R.id.recyclerView);
-        recyclerViewProduct.setLayoutManager(new LinearLayoutManager(this));
-
     }
-
-    public void onResume() {
-        super.onResume();
-        getAndShowProducts();
-    }
-
     private void getAndShowProducts() {
         new AsyncTask<Void, Void, List<Product>>() {
             @Override

@@ -17,7 +17,7 @@ import com.example.shoppingcart.database.Cart;
 import java.util.List;
 
 public class cartAdapter extends RecyclerView.Adapter<cartAdapter.CartViewHolder> {
-    private List<Cart> Carts;
+    List<Cart> Carts;
     private OnItemClicked onClick;
     Image image = new Image();
 
@@ -27,9 +27,9 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.CartViewHolder
         void onClickDelete(int position);
     }
 
-    public cartAdapter(Runnable runnable, List<Cart> carts) {
-        Carts = carts;
-    }
+//    public cartAdapter(Runnable runnable, List<Cart> carts) {
+//        Carts = carts;
+//    }
 
     @NonNull
     @Override
@@ -45,7 +45,7 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.CartViewHolder
         holder.nameCartItem.setText(Carts.get(position).product_name);
         holder.quantityCartItem.setText(Carts.get(position).quantity +"");
         holder.quantityCartItem.setId(position);
-        holder.PriceCartItem.setText(Carts.get(position).price+"");
+        holder.PriceCartItem.setText(Carts.get(position).price+" VND");
         holder.imageCartItem.setImageBitmap(image.base64SringToImage(Carts.get(position).product_image));
 
         holder.btn_reduction.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +76,9 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.CartViewHolder
 
     @Override
     public int getItemCount() {
+        if (Carts == null) {
+            return 0;
+        }
         return Carts.size();
     }
 

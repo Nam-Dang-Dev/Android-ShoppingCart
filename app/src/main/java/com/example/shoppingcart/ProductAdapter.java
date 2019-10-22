@@ -47,7 +47,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         holder.viewName.setText(Products.get(position).product_name);
         holder.viewImage.setImageBitmap(image.base64SringToImage(Products.get(position).product_image));
-        holder.viewPrice.setText(Products.get(position).price + "");
+        holder.viewPrice.setText(Products.get(position).price + "  VND");
 
         holder.btnAddToCart.setOnClickListener(new View.OnClickListener() {
             @Override
