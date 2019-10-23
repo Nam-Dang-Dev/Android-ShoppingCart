@@ -21,6 +21,7 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.CartViewHolder
     private OnItemClicked onClick;
     Image image = new Image();
 
+
     public interface OnItemClicked {
         void onClickReductionQuantity(int position);
         void onClickPlusQuantity(int position);

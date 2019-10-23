@@ -8,16 +8,19 @@ import androidx.room.Room;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.shoppingcart.R;
 import com.example.shoppingcart.database.AppDatabase;
 import com.example.shoppingcart.database.Cart;
+
 import java.util.List;
 
 public class CartActivity extends AppCompatActivity implements com.example.shoppingcart.Cart.cartAdapter.OnItemClicked {
     RecyclerView recyclerViewCart;
     cartAdapter cartAdapter;
     AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,13 +33,15 @@ public class CartActivity extends AppCompatActivity implements com.example.shopp
         cartAdapter.setOnClick(CartActivity.this);
         recyclerViewCart.setAdapter(cartAdapter);
     }
+
     public void onResume() {
         super.onResume();
         getAndShowCarts();
+
     }
 
     private void getAndShowCarts() {
-        new AsyncTask<Void, Void, List<Cart>>(){
+        new AsyncTask<Void, Void, List<Cart>>() {
             @Override
             protected List<Cart> doInBackground(Void... voids) {
                 return db.CartDao().getAllCart();
@@ -47,26 +52,42 @@ public class CartActivity extends AppCompatActivity implements com.example.shopp
                 super.onPostExecute(carts);
                 cartAdapter.Carts = carts;
                 cartAdapter.notifyDataSetChanged();
+                showTotalPrice();
             }
         }.execute();
     }
-    private void updateQuantity(String calculate, final int position){
-        int OldQuantity =cartAdapter.Carts.get(position).quantity;
-        if(calculate =="plus"){
-            cartAdapter.Carts.get(position).quantity+=1;
-        }else if (calculate =="reduction"){
-            cartAdapter.Carts.get(position).quantity-=1;
+
+    private  void  showTotalPrice(){
+        int totalPrice = 0;
+        for(int i=0; i< cartAdapter.Carts.size(); i++){
+            totalPrice += cartAdapter.Carts.get(i).price * cartAdapter.Carts.get(i).quantity;
         }
-        if (OldQuantity>0){
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    db.CartDao().updateCart(cartAdapter.Carts.get(position));
-                    return null;
-                }
-            }.execute();
+        TextView textViewTotalPrice = findViewById(R.id.totalPrice);
+        textViewTotalPrice.setText("  "+totalPrice+"");
+    }
+
+    private void updateQuantity(String calculate, final int position) {
+
+        if (calculate == "plus") {
+            cartAdapter.Carts.get(position).quantity += 1;
+        } else if (calculate == "reduction") {
+            int OldQuantity = cartAdapter.Carts.get(position).quantity;
+            if (OldQuantity > 0) {
+                cartAdapter.Carts.get(position).quantity -= 1;
+            }
         }
+
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                db.CartDao().updateCart(cartAdapter.Carts.get(position));
+                return null;
+            }
+        }.execute();
+
         cartAdapter.notifyItemChanged(position);
+        showTotalPrice();
     }
 
     @Override
@@ -79,28 +100,29 @@ public class CartActivity extends AppCompatActivity implements com.example.shopp
         updateQuantity("plus", position);
 
     }
-    private void deleteCartItem(final int position){
+
+    private void deleteCartItem(final int position) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 db.CartDao().deleteCart(cartAdapter.Carts.get(position));
                 return null;
             }
+
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                Log.d("tag","lan11111111"+position);
                 cartAdapter.Carts.remove(position);
                 cartAdapter.notifyDataSetChanged();
-                Log.d("tag","lan222222222"+position);
-
-
+                showTotalPrice();
             }
         }.execute();
+
     }
 
     @Override
     public void onClickDelete(final int position) {
         deleteCartItem(position);
+
     }
 }
